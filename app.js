@@ -8,6 +8,7 @@ const cardContainer = document.getElementById("card-container");
 const alertMessage = document.getElementById("alert");
 const locate = document.getElementById("locate");
 const locationDiv = document.getElementById("userLocation");
+const langButton = document.querySelector(".language");
 
 //! Variables
 let apiKey = "4ed283ae2ece6cf1fe2fe7e75b2ea7a5";
@@ -38,6 +39,17 @@ locate.addEventListener("click", () => {
     userLocation = true;
     getWeatherData();
   });
+});
+
+langButton.addEventListener("click", (e) => {
+  //   console.log(e.target.textContent);
+  if (e.target.textContent === "DE") {
+    input.setAttribute("placeholder", "Suche nach einer Stadt");
+    lang = "de";
+  } else if (e.target.textContent === "EN") {
+    input.setAttribute("placeholder", "Search for a city");
+    lang = "en";
+  }
 });
 
 //! Functions
@@ -106,11 +118,27 @@ const getWeatherData = async () => {
         };
       });
     } else {
-      alertMessage.textContent = `You already know the weather for ${name}, Please search for another city 😉`;
+      if (lang == "de") {
+        alertMessage.textContent = `Sie kennen das Wetter für die ${name} bereits. Bitte suchen Sie nach einer anderen Stadt 😉`;
+      } else {
+        alertMessage.textContent = `You already know the weather for ${name}, Please search for another city 😉`;
+      }
       alertMessage.classList.replace("d-none", "d-block");
       setTimeout(() => {
         alertMessage.classList.replace("d-block", "d-none");
       }, 3000);
     }
-  } catch (error) {}
+  } catch (error) {
+    if (lang == "de") {
+      alertMessage.textContent = `Stadt nicht gefunden`;
+    } else {
+      alertMessage.textContent = `City Not Found!`;
+    }
+
+    alertMessage.classList.replace("d-none", "d-block");
+
+    setTimeout(() => {
+      alertMessage.classList.replace("d-block", "d-none");
+    }, 3000);
+  }
 };
