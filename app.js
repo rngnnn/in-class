@@ -5,12 +5,15 @@ console.log("App.js working");
 const form = document.querySelector("form");
 const input = document.querySelector("form input.form-control");
 const cardContainer=document.getElementById("card-container")
+const alertMessage=document.getElementById("alert")
+
 
 //! Variables
 let apiKey = "3357576dce858cc99a7aeba5998d81e1";
 let url; // api isteği için kullanılacak
 let units = "metric"; // fahrenheit için 'imperial' yazılması
 let lang = "en"; // Almanca için 'de'
+let cities=[]
 
 //! Event listeners
 form.addEventListener("submit", (e) => {
@@ -39,6 +42,13 @@ console.log(response);
 const{main,name,weather,sys}=data
 const iconUrl=`https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weather[0].icon}.svg`;
 
+
+
+
+// if(cities.indexOf(name===-1)){
+
+if(!cities.includes(name)){
+cities.unshift(name)
 const card=document.createElement("div")
 card.classList.add("col")
 card.setAttribute("id",`${name}`)
@@ -72,6 +82,13 @@ card.innerHTML= `
 
 
 cardContainer.prepend(card)
+}else{
+alertMessage.textContent=`You already know the weather for ${name},Please searc for another city🫠`;
+alertMessage.classList.replace("d-none","d-block");
+
+}
+
+
 }catch(error){}
 
 }
