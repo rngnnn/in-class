@@ -23,9 +23,9 @@ form.addEventListener("submit", (e) => {
 
 
   getWeatherData()
-
   
   }
+  form.reset();
   
 });
 
@@ -70,6 +70,8 @@ card.innerHTML= `
 </div>
 `;
 
+
+cardContainer.prepend(card)
 }catch(error){}
 
 }
