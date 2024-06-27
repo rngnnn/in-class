@@ -6,6 +6,8 @@ const form = document.querySelector("form");
 const input = document.querySelector("form input.form-control");
 const cardContainer = document.getElementById("card-container");
 const alertMessage = document.getElementById("alert");
+const locate = document.getElementById("locate");
+const locationDiv = document.getElementById("userLocation");
 
 //! Variables
 let apiKey = "4ed283ae2ece6cf1fe2fe7e75b2ea7a5";
@@ -13,6 +15,7 @@ let url; // api isteği için kullanılacak
 let units = "metric"; // fahrenheit için 'imperial' yazılması
 let lang = "en"; // Almanca için 'de' yazılmalı
 let cities = [];
+let userLocation = false;
 
 //! Event listeners
 form.addEventListener("submit", (e) => {
@@ -26,6 +29,17 @@ form.addEventListener("submit", (e) => {
   form.reset(); // formu sıfırlar
 });
 
+locate.addEventListener("click", () => {
+  //* broswserdan kullanıcının locasyonunu almak için kullanılan method
+  navigator.geolocation.getCurrentPosition(({ coords }) => {
+    console.log(coords);
+    const { latitude, longitude } = coords;
+    url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=${units}&lang=${lang}&appid=${apiKey}`;
+    userLocation = true;
+    getWeatherData();
+  });
+});
+
 //! Functions
 const getWeatherData = async () => {
   try {
@@ -37,8 +51,8 @@ const getWeatherData = async () => {
     console.log(data);
     //? data destructure
     const { main, name, weather, sys } = data;
- 
-    const iconUrl = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weather[0].icon}.svg`; //
+    // const iconUrl = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png` //^ openweathermap.org
+    const iconUrl = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weather[0].icon}.svg`; //^ alternatif
 
     // if (cities.indexOf(name) === -1) {
     if (!cities.includes(name)) {
@@ -73,19 +87,24 @@ const getWeatherData = async () => {
         </ul>
 </div>
 `;
-      cardContainer.prepend(card);
-//!remove cities
-const deleteButton=document.querySelectorAll(".bi bi-x-circle")
-console.log(deleteButton);
-deleteButton.forEach((Button)=>{
-    Button.onclick=()=>{
-       console.log(Button.closest(".col").id); 
-     cities.splice(cities.indexOf(button.closest(".col").id),1) //diziden eleman siler.
+      if (userLocation) {
+        locationDiv.append(card);
+        userLocation = false;
+      } else {
+        cardContainer.prepend(card);
+      }
 
-       Button.closest(".col").remove()  //DOM'dan silinir
-    }
-})
-
+      //! remove cities
+      const deleteButton = document.querySelectorAll(".bi-x-circle");
+      console.log(deleteButton);
+      deleteButton.forEach((button) => {
+        button.onclick = () => {
+          console.log(button.closest(".col").id);
+          cities.splice(cities.indexOf(button.closest(".col").id), 1); //! diziden eleman silme
+          //   cities = cities.filter((city) => city !== button.closest(".col").id);
+          button.closest(".col").remove(); //! DOM'dan siler
+        };
+      });
     } else {
       alertMessage.textContent = `You already know the weather for ${name}, Please search for another city 😉`;
       alertMessage.classList.replace("d-none", "d-block");
